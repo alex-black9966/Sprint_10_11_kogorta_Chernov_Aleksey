@@ -39,6 +39,18 @@ def negative_assert_code_400(name):
     # Проверяется текст в теле ответа в атрибуте "message"
     assert response.json()["message"] == "Не все необходимые параметры были переданы"
 
+def negative_assert_no_name(kit_body):
+    # В переменную response сохраняется результат
+    response = sender_stand_request.post_new_client_kit(kit_body)
+
+    # Проверяется, что код ответа равен 400
+    assert response.status_code == 400
+
+    # Проверяется, что в теле ответа атрибут "code" равен 400
+    assert response.json()["code"] == 400
+    # Проверяется текст в теле ответа в атрибуте "message"
+    assert response.json()["message"] == "Не все необходимые параметры были переданы"
+
 
 # Тест 1. Допустимое количество символов (1)
 def test_create_kit_1_letter_in_name_get_success_response():
@@ -91,8 +103,12 @@ def test_create_kit_digit_in_name_get_success_response():
 
 # Тест 10. Параметр не передан в запросе
 def test_create_kit_no_name_get_error_response():
-    negative_assert_code_400(name)
-
+    # Копируется словарь с телом запроса из файла data в переменную kit_body
+    kit_body = data.kit_body.copy()
+    # Удаление параметра name из запроса
+    kit_body.pop("name")
+    # Проверка полученного ответа
+    negative_assert_no_name(kit_body)
 # Тест 11. Передан другой тип параметра (число)
 def test_create_kit_number_letter_in_name_get_error_response():
     negative_assert_code_400(123)
